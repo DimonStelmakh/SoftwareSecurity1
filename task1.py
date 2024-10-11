@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, ttk, TclError
 from task2 import CaesarCipher, TrithemiusCipher
 
 
@@ -139,22 +139,38 @@ class CryptoApp(tk.Tk):
         language = self.language_var.get()
 
         if cipher_type == 'caesar':
-            key = self.key_var.get()
+            try:
+                key = self.key_var.get()
+            except TclError:
+                messagebox.showerror(title="Неправильний тип!", message="Ключ повинен бути цілим числом!")
+                return
             cipher = CaesarCipher(key)
             encrypted_text = cipher.encrypt(input_text, language=language)
 
         elif cipher_type == 'trithemius':
             method = self.method_choice.get()
             if method == 'Лінійне рівняння':
-                A, B = self.A_var.get(), self.B_var.get()
+                try:
+                    A, B = self.A_var.get(), self.B_var.get()
+                except TclError:
+                    messagebox.showerror(title="Неправильний тип!", message="Коефіцієнти повинні бути цілими числами!")
+                    return
                 cipher = TrithemiusCipher(A=A, B=B)
                 encrypted_text = cipher.encrypt_linear(input_text, language=language)
             elif method == 'Нелінійне рівняння':
-                A, B, C = self.A_var.get(), self.B_var.get(), self.C_var.get()
+                try:
+                    A, B, C = self.A_var.get(), self.B_var.get(), self.C_var.get()
+                except TclError:
+                    messagebox.showerror(title="Неправильний тип!", message="Коефіцієнти повинні бути цілими числами!")
+                    return
                 cipher = TrithemiusCipher(A=A, B=B, C=C)
                 encrypted_text = cipher.encrypt_nonlinear(input_text, language=language)
             elif method == 'Гасло':
-                key_phrase = self.key_phrase_var.get()
+                try:
+                    key_phrase = self.key_phrase_var.get()
+                except TclError:
+                    messagebox.showerror(title="Неправильний тип!", message="Гасло повинне бути стрічкою!")
+                    return
                 cipher = TrithemiusCipher(key_phrase=key_phrase)
                 encrypted_text = cipher.encrypt_key_phrase(input_text, language=language)
 
@@ -167,7 +183,11 @@ class CryptoApp(tk.Tk):
         language = self.language_var.get()
 
         if cipher_type == 'caesar':
-            key = self.key_var.get()
+            try:
+                key = self.key_var.get()
+            except TclError:
+                messagebox.showerror(title="Неправильний тип!", message="Ключ повинен бути цілим числом!")
+                return
             cipher = CaesarCipher(key)
             decrypted_text = cipher.decrypt(input_text, language=language)
 
@@ -175,15 +195,28 @@ class CryptoApp(tk.Tk):
             method = self.method_choice.get()
             match method:
                 case 'Лінійне рівняння':
-                    A, B = self.A_var.get(), self.B_var.get()
+                    try:
+                        A, B = self.A_var.get(), self.B_var.get()
+                    except TclError:
+                        messagebox.showerror(title="Неправильний тип!", message="Коефіцієнти повинні бути цілими числами!")
+                        return
                     cipher = TrithemiusCipher(A=A, B=B)
                     decrypted_text = cipher.decrypt_linear(input_text, language=language)
                 case 'Нелінійне рівняння':
-                    A, B, C = self.A_var.get(), self.B_var.get(), self.C_var.get()
+                    try:
+                        A, B, C = self.A_var.get(), self.B_var.get(), self.C_var.get()
+                    except TclError:
+                        messagebox.showerror(title="Неправильний тип!",
+                                             message="Коефіцієнти повинні бути цілими числами!")
+                        return
                     cipher = TrithemiusCipher(A=A, B=B, C=C)
                     decrypted_text = cipher.decrypt_nonlinear(input_text, language=language)
                 case 'Гасло':
-                    key_phrase = self.key_phrase_var.get()
+                    try:
+                        key_phrase = self.key_phrase_var.get()
+                    except TclError:
+                        messagebox.showerror(title="Неправильний тип!", message="Гасло повинне бути стрічкою!")
+                        return
                     cipher = TrithemiusCipher(key_phrase=key_phrase)
                     decrypted_text = cipher.decrypt_key_phrase(input_text, language=language)
                 case _:

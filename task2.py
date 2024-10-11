@@ -4,19 +4,19 @@ class CaesarCipher:
         self.alphabet_ua = 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
         self.alphabet_en = 'abcdefghijklmnopqrstuvwxyz'
 
-    def validate_key(self):
-        if not isinstance(self.key, int):
-            raise ValueError("Ключ повинен бути цілим числом!")
+    # def validate_key(self):
+    #     if not isinstance(self.key, int):
+    #         raise ValueError("Ключ повинен бути цілим числом!")
 
     def encrypt(self, text, language='ua'):
-        self.validate_key()
+        # self.validate_key()
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         shifted_alphabet = alphabet[self.key % len(alphabet):] + alphabet[:self.key % len(alphabet)]
         table = str.maketrans(alphabet, shifted_alphabet)
         return text.translate(table)
 
     def decrypt(self, text, language='ua'):
-        self.validate_key()
+        # self.validate_key()
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         shifted_alphabet = alphabet[-self.key % len(alphabet):] + alphabet[:-self.key % len(alphabet)]
         table = str.maketrans(alphabet, shifted_alphabet)
@@ -32,7 +32,15 @@ class TrithemiusCipher:
         self.alphabet_ua = 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
         self.alphabet_en = 'abcdefghijklmnopqrstuvwxyz'
 
+    # def validate_coefficients(self, linear: bool):
+    #     if not isinstance(self.A, int) or not isinstance(self.B, int):
+    #         raise ValueError("Коефіцієнти повинні бути цілими числами!")
+    #     if not linear:
+    #         if not isinstance(self.C, int):
+    #             raise ValueError("Коефіцієнти повинні бути цілими числами!")
+
     def encrypt_linear(self, text, language='ua'):
+        # self.validate_coefficients(True)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         encrypted_text = []
         for i, char in enumerate(text):
@@ -45,6 +53,7 @@ class TrithemiusCipher:
         return ''.join(encrypted_text)
 
     def decrypt_linear(self, text, language='ua'):
+        # self.validate_coefficients(True)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         decrypted_text = []
         for i, char in enumerate(text):
@@ -57,6 +66,7 @@ class TrithemiusCipher:
         return ''.join(decrypted_text)
 
     def encrypt_nonlinear(self, text, language='ua'):
+        self.validate_coefficients(False)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         encrypted_text = []
         for i, char in enumerate(text):
@@ -69,6 +79,7 @@ class TrithemiusCipher:
         return ''.join(encrypted_text)
 
     def decrypt_nonlinear(self, text, language='ua'):
+        self.validate_coefficients(False)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         decrypted_text = []
         for i, char in enumerate(text):
