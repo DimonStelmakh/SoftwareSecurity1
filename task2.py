@@ -66,7 +66,7 @@ class TrithemiusCipher:
         return ''.join(decrypted_text)
 
     def encrypt_nonlinear(self, text, language='ua'):
-        self.validate_coefficients(False)
+        # self.validate_coefficients(False)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         encrypted_text = []
         for i, char in enumerate(text):
@@ -79,7 +79,7 @@ class TrithemiusCipher:
         return ''.join(encrypted_text)
 
     def decrypt_nonlinear(self, text, language='ua'):
-        self.validate_coefficients(False)
+        # self.validate_coefficients(False)
         alphabet = self.alphabet_ua if language == 'ua' else self.alphabet_en
         decrypted_text = []
         for i, char in enumerate(text):

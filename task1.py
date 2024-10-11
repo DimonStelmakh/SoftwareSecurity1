@@ -7,7 +7,7 @@ class CryptoApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Криптографічна система")
-        self.geometry("700x450")
+        self.geometry("700x500")
 
         self.cipher_type = tk.StringVar(value='caesar')
         self.language_var = tk.StringVar(value='ua')
@@ -33,6 +33,10 @@ class CryptoApp(tk.Tk):
                        command=self.toggle_cipher_options).pack()
         tk.Radiobutton(self, text="Шифр Тритеміуса", variable=self.cipher_type, value='trithemius',
                        command=self.toggle_cipher_options).pack()
+
+        tk.Label(self, text="Мова:").pack()
+        self.language_menu = tk.OptionMenu(self, self.language_var, 'ua', 'en')
+        self.language_menu.pack()
 
         self.key_frame = tk.Frame(self)
         tk.Label(self.key_frame, text="Ключ для шифру Цезаря:").pack(side=tk.LEFT)
