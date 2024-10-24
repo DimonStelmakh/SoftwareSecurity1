@@ -1,3 +1,5 @@
+import random
+
 class CaesarCipher:
     def __init__(self, key):
         self.key = key
@@ -115,5 +117,62 @@ class TrithemiusCipher:
                 decrypted_text.append(alphabet[new_pos])
             else:
                 decrypted_text.append(char)
+        return ''.join(decrypted_text)
+
+
+class BookCipher:
+    def __init__(self, pangram=None, language='ua'):
+        self.ua_pangrams = pangram if pangram and language=='ua' else (
+            "Жебракують філософи при ґанку церкви в Гадячі, ще й шатро їхнє п'яне знаємо",
+            "Є місць багато, ґедзю, де фрукт в’ялий їж і шуми, а хвощ не чіпай",
+            "Доки ж є чаш цих п’ять, фехтуймо ґречно, юнаки щасливі, за її губи",
+            "На подушечці форми любої є й ґудзик щоб пір’я геть жовте сховати"
+        )
+
+        self.en_pangrams = pangram if pangram and language=='en' else (
+            "The quick brown fox jumps over the lazy dog",
+            "Pack my box with five dozen liquor jugs",
+            "How vexingly quick daft zebras jump",
+            "Waltz, bad nymph, for quick jigs vex"
+        )
+
+        self.language = language
+        self.table = self.create_table(language)
+
+    def create_table(self, language):
+        # створюємо таблицю 10x10 з панграм (нумеруємо 0-9)
+        if language == 'ua':
+            pangram_string = ''.join(self.ua_pangrams).replace(' ', '').replace(',', '').replace('’', '').replace('-','')
+        else:
+            pangram_string = ''.join(self.en_pangrams).replace(' ', '').replace(',', '').replace('’', '').replace('-','')
+
+        while len(pangram_string) < 100:
+            pangram_string*=2
+
+        table = [pangram_string[i:i + 10] for i in range(0, 100, 10)]
+        return table
+
+    def encrypt(self, text):
+        encrypted_text = []
+        for char in text:
+            positions = [(i, j) for i in range(10) for j in range(10) if self.table[i][j].lower() == char.lower()]
+            if positions:
+                i, j = random.choice(positions)
+                encrypted_text.append(f"{i}/{j}")
+            else:
+                encrypted_text.append(char)
+                # якщо символ не знайдено, лишаємо як є, але бажано використовувати панграми, щоб такого не траплялось
+        return ' '.join(encrypted_text)
+
+    def decrypt(self, text):
+        decrypted_text = []
+        pairs = text.split()
+        for pair in pairs:
+            if len(pair) == 3 and pair[0].isdigit() and pair[1] == '/' and pair[2].isdigit():
+                i, j = int(pair[0]), int(pair[2])
+                decrypted_text.append(self.table[i][j])
+            else:
+                decrypted_text.append(pair)
+                # якщо символ не знайдено, лишаємо як є, але бажано використовувати панграми, щоб такого не траплялось
         return ''.join(decrypted_text)
 

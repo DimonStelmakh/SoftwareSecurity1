@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk, TclError
-from task2 import CaesarCipher, TrithemiusCipher
+from xml.sax import parse
+
+from task2 import CaesarCipher, TrithemiusCipher, BookCipher
 
 
 class CryptoApp(tk.Tk):
@@ -16,6 +18,7 @@ class CryptoApp(tk.Tk):
         self.B_var = tk.IntVar()
         self.C_var = tk.IntVar()
         self.key_phrase_var = tk.StringVar()
+        self.pangram_var = tk.StringVar()
 
         self.init_ui()
         self.create_menu()
@@ -33,6 +36,8 @@ class CryptoApp(tk.Tk):
                        command=self.toggle_cipher_options).pack()
         tk.Radiobutton(self, text="Шифр Тритеміуса", variable=self.cipher_type, value='trithemius',
                        command=self.toggle_cipher_options).pack()
+        tk.Radiobutton(self, text="Книжковий шифр", variable=self.cipher_type, value='book',
+                       command=self.toggle_cipher_options).pack()
 
         tk.Label(self, text="Мова:").pack()
         self.language_menu = tk.OptionMenu(self, self.language_var, 'ua', 'en')
@@ -44,7 +49,6 @@ class CryptoApp(tk.Tk):
         self.key_entry.pack(side=tk.LEFT)
         self.key_frame.pack(pady=5)
 
-        # Trithemius method choice
         self.trithemius_frame = tk.Frame(self)
         self.method_label = tk.Label(self.trithemius_frame, text="Метод шифру Тритеміуса:")
         self.method_label.pack(side=tk.LEFT)
@@ -71,6 +75,15 @@ class CryptoApp(tk.Tk):
         self.key_phrase_entry = tk.Entry(self.key_phrase_frame, textvariable=self.key_phrase_var)
         self.key_phrase_entry.pack(side=tk.LEFT)
 
+        # pangram
+        self.pangram_frame = tk.Frame(self)
+        tk.Label(self.pangram_frame, text="Вірш (бажано панграма):").pack(side=tk.LEFT)
+        self.pangram_entry = tk.Entry(self.pangram_frame, textvariable=self.pangram_var)
+        self.pangram_entry.pack(side=tk.LEFT)
+
+        self.pangram_info_frame = tk.Frame(self)
+        tk.Label(self.pangram_info_frame, text='Якщо не ввести вірш, буде використано стандартний (див. "Допомога")').pack(side=tk.TOP)
+
         tk.Button(self, text="Шифрувати", command=self.encrypt_file).pack(pady=5)
         tk.Button(self, text="Розшифрувати", command=self.decrypt_file).pack(pady=5)
 
@@ -90,6 +103,7 @@ class CryptoApp(tk.Tk):
         # меню "Допомога"
         help_menu = tk.Menu(menubar, tearoff=0)
         help_menu.add_command(label="Про розробника", command=self.about_developer)
+        help_menu.add_command(label="Стандартний ключ книжкового шифру", command=self.standard_book_key)
         menubar.add_cascade(label="Допомога", menu=help_menu)
 
         self.config(menu=menubar)
@@ -115,13 +129,24 @@ class CryptoApp(tk.Tk):
     def toggle_cipher_options(self):
         cipher = self.cipher_type.get()
         if cipher == 'caesar':
-            self.key_frame.pack(pady=5)
+            self.pangram_frame.pack_forget()
+            self.pangram_info_frame.pack_forget()
             self.trithemius_frame.pack_forget()
             self.coefficients_frame.pack_forget()
             self.key_phrase_frame.pack_forget()
+            self.key_frame.pack(pady=5)
         elif cipher == 'trithemius':
             self.key_frame.pack_forget()
+            self.pangram_frame.pack_forget()
+            self.pangram_info_frame.pack_forget()
             self.trithemius_frame.pack(pady=5)
+        elif cipher == 'book':
+            self.key_frame.pack_forget()
+            self.trithemius_frame.pack_forget()
+            self.coefficients_frame.pack_forget()
+            self.key_phrase_frame.pack_forget()
+            self.pangram_frame.pack(pady=5)
+            self.pangram_info_frame.pack(pady=5)
 
     def show_trithemius_options(self, event=None):
         method = self.method_choice.get()
@@ -178,6 +203,15 @@ class CryptoApp(tk.Tk):
                 cipher = TrithemiusCipher(key_phrase=key_phrase)
                 encrypted_text = cipher.encrypt_key_phrase(input_text, language=language)
 
+        elif cipher_type == 'book':
+            try:
+                pangram = self.pangram_var.get()
+            except TclError:
+                messagebox.showerror(title="Неправильний тип!", message="Вірш повинен бути стрічкою!")
+                return
+            cipher = BookCipher(pangram=pangram, language=language)
+            encrypted_text = cipher.encrypt(input_text)
+
         self.output_text.delete("1.0", tk.END)
         self.output_text.insert(tk.END, encrypted_text)
 
@@ -226,12 +260,27 @@ class CryptoApp(tk.Tk):
                 case _:
                     messagebox.showerror("Помилка", "Неочікувана помилка розшифрування")
 
+        elif cipher_type == 'book':
+            try:
+                pangram = self.pangram_var.get()
+            except TclError:
+                messagebox.showerror(title="Неправильний тип!", message="Вірш повинен бути стрічкою!")
+                return
+            cipher = BookCipher(pangram=pangram, language=language)
+            decrypted_text = cipher.decrypt(input_text)
+
         self.output_text.delete("1.0", tk.END)
         self.output_text.insert(tk.END, decrypted_text)
 
     def about_developer(self):
         messagebox.showinfo("Про розробника", "Ця система розроблена Дмитром Стельмахом із групи ТВ-13")
 
+    def standard_book_key(self):
+        cipher = BookCipher(None, 'ua')
+        ua_string = '\n'.join(cipher.ua_pangrams)
+        en_string = '\n'.join(cipher.en_pangrams)
+        messagebox.showinfo(title="Стандартні ключі книжкового шифру", message=f"Українською:\n\n{ua_string}\n\n"
+                                                                               f"Англійською:\n\n{en_string}")
 
 if __name__ == "__main__":
     app = CryptoApp()
