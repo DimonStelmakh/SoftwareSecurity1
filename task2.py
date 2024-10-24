@@ -113,17 +113,17 @@ class TrithemiusCipher:
 class BookCipher:
     def __init__(self, pangram=None, language='ua'):
         self.ua_pangrams = pangram if pangram and language=='ua' else (
-            "Жебракують філософи при ґанку церкви в Гадячі, ще й шатро їхнє п'яне знаємо",
-            "Є місць багато, ґедзю, де фрукт в’ялий їж і шуми, а хвощ не чіпай",
-            "Доки ж є чаш цих п’ять, фехтуймо ґречно, юнаки щасливі, за її губи",
-            "На подушечці форми любої є й ґудзик щоб пір’я геть жовте сховати"
+            "жебракують філософи при ґанку церкви в гадячі, ще й шатро їхнє п'яне знаємо",
+            "є місць багато, ґедзю, де фрукт в’ялий їж і шуми, а хвощ не чіпай",
+            "доки ж є чаш цих п’ять, фехтуймо ґречно, юнаки щасливі, за її губи",
+            "на подушечці форми любої є й ґудзик щоб пір’я геть жовте сховати"
         )
 
         self.en_pangrams = pangram if pangram and language=='en' else (
-            "The quick brown fox jumps over the lazy dog",
-            "Pack my box with five dozen liquor jugs",
-            "How vexingly quick daft zebras jump",
-            "Waltz, bad nymph, for quick jigs vex"
+            "the quick brown fox jumps over the lazy dog",
+            "pack my box with five dozen liquor jugs",
+            "how vexingly quick daft zebras jump",
+            "waltz, bad nymph, for quick jigs vex"
         )
 
         self.language = language
@@ -155,14 +155,22 @@ class BookCipher:
         return ' '.join(encrypted_text)
 
     def decrypt(self, text):
-        decrypted_text = []
-        pairs = text.split()
-        for pair in pairs:
-            if len(pair) == 3 and pair[0].isdigit() and pair[1] == '/' and pair[2].isdigit():
-                i, j = int(pair[0]), int(pair[2])
-                decrypted_text.append(self.table[i][j])
-            else:
-                decrypted_text.append(pair)
-                # якщо символ не знайдено, лишаємо як є, але бажано використовувати панграми, щоб такого не траплялось
-        return ''.join(decrypted_text)
+        decrypted_text = []  # Список для збереження дешифрованих слів
+        words = text.split('  ')  # Текст розбивається по пробілах на пари
+
+        for word in words:
+            decrypted_word = []  # Тимчасовий список для одного дешифрованого слова
+            pairs = word.split()  # Розбиваємо кожну пару на символи
+
+            for pair in pairs:
+                if len(pair) == 3 and pair[0].isdigit() and pair[1] == '/' and pair[2].isdigit():
+                    i, j = int(pair[0]), int(pair[2])
+                    decrypted_word.append(self.table[i][j])  # Додаємо відновлений символ до поточного слова
+                else:
+                    decrypted_word.append(pair)  # Якщо символ не знайдено, залишаємо його як є
+
+            decrypted_text.append(''.join(decrypted_word))
+
+        return ' '.join(decrypted_text)
+
 
