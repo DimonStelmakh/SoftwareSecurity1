@@ -6,9 +6,6 @@ class CaesarCipher:
         self.alphabet_ua = 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
         self.alphabet_en = 'abcdefghijklmnopqrstuvwxyz'
 
-    # def validate_key(self):
-    #     if not isinstance(self.key, int):
-    #         raise ValueError("Ключ повинен бути цілим числом!")
 
     def encrypt(self, text, language='ua'):
         # self.validate_key()
@@ -33,13 +30,6 @@ class TrithemiusCipher:
         self.key_phrase = key_phrase
         self.alphabet_ua = 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюя'
         self.alphabet_en = 'abcdefghijklmnopqrstuvwxyz'
-
-    # def validate_coefficients(self, linear: bool):
-    #     if not isinstance(self.A, int) or not isinstance(self.B, int):
-    #         raise ValueError("Коефіцієнти повинні бути цілими числами!")
-    #     if not linear:
-    #         if not isinstance(self.C, int):
-    #             raise ValueError("Коефіцієнти повинні бути цілими числами!")
 
     def encrypt_linear(self, text, language='ua'):
         # self.validate_coefficients(True)
